@@ -108,40 +108,18 @@
         Node 端，microtask（微任务） 在事件循环的各个阶段之间执行
         浏览器端，microtask（微任务） 在事件循环的 macrotask(宏任务) 执行完之后执行
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-- ES6 Modules 相对于 CommonJS 的优势是什么？
-
+- **ES6 Modules 相对于 CommonJS 的优势是什么？**
+  
+    - ES6 Modules输出值是引用、CommonJS是拷贝
+    - CommonJS 模块是运行时加载，ES6 模块是编译时输出接口
+    - CommonJs 是单个值导出，ES6 Module可以导出多个
+    - CommonJs 是动态语法可以写在判断里进行加载，ES6 Module 静态语法只能写在顶层引入使用
+    - CommonJs 的 this 是当前模块，ES6 Module的 this 是 undefined
 
 - 高级程序设计语言是如何编译成机器语言的？
-    
+  
+    `源码进行parse、转成AST抽象语法树、然后对AST语法树进行语法分析检查出语法的错误、比如类型是否正确、引用类型是否存在，break是否在while中等，主要要做作用域分析、引用消解、类型推导和检查、正确性检查、
+    之后要先转成一种线性的代码，再生成低级代码。`
 
 - 编译器一般由哪几个阶段组成？数据类型检查一般在什么阶段进行？
     
@@ -156,7 +134,98 @@
 
 
 - 发布 / 订阅模式和观察者模式的区别是什么？
-
+  
+    - 观察者模式
+        ```js
+        class Observer{
+            constructor(){
+                this.observerList = []
+            }
+            add(observer){
+               return this.observerList.push(observer);
+            }
+            remove(observer){
+                this.observerList = this.observerList.filter( ob => ob != observer)
+            }
+            count(){
+                return this.observerList.length
+            }
+            get(index){
+                return this.observerList[index]
+            }
+        }
+    
+        class Subject{
+            constructor(){
+                this.observers = new Observer()
+            }
+            addObserver(observer){
+                this.observers.add(observer)
+            }
+            removeObserver(observer){
+                this.observers.remove(observer)
+            }
+            notify(...args){
+                let count = this.observers.count();
+                for(let i=0; i < count; i++){
+                    let fn = this.observers.get(i);
+                    fn(...args)
+                }
+            }
+        }
+    
+        let observe = new Subject();
+        let fn1 = function(arg){
+            console.log('fn1',arg)
+        }
+        observe.addObserver(fn1);
+        let fn2 = function(arg){
+            console.log('fn2',arg)
+        }
+        observe.addObserver(fn2);
+        observe.notify(111)
+        ```
+    - 发布订阅模式
+        ```js
+            class AnyEventBus{
+                constructor(){
+                    this.subscribers = {} 
+                }
+                $on(eventName, callback){
+                    if(!Object.prototype.hasOwnProperty.call(this.subscribers, eventName)){
+                        this.subscribers[eventName] = [];
+                    }
+                    this.subscribers[eventName].push(callback);
+                }
+                $off(eventNmae, callback){
+                    this.subscribers[eventNmae] = this.subscribers[eventNmae].filter( item => item != callback );
+                }
+                $emit(eventName,...arg){
+                    let eventlist = this.subscribers[eventName];
+                    for(let i=0, len=eventlist.length; i<len; i++){
+                        eventlist[i](arg)
+                    }
+                }
+            }
+    
+            let vm = new AnyEventBus();
+            function fn(arg){ console.log('发布订阅111',arg) }
+            vm.$on('test',fn)
+            function fn1(arg){ console.log('发布订阅222',arg) }
+            vm.$on('test',fn1)
+            
+            setTimeout( () =>{
+                vm.$emit('test',[1,23]);
+                vm.$off('test',fn1)
+            },2000)
+            setTimeout( () =>{
+                vm.$emit('test',{});
+            },4000)
+        ```
+    - 总结：
+      - 观察者模式是对一个对象的观察、对象变化了就会去执行订阅的目标、互相依赖
+      - 发布订阅模式是通过一个调度中心进行调度执行、不形成依赖、也订阅不同的事件模型
+    
 
 - 装饰器模式一般会在什么场合使用？
 
