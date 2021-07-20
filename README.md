@@ -65,23 +65,92 @@
         
         ![函数保存](https://segmentfault.com/img/remote/1460000022130271)
         ![变量保存](https://segmentfault.com/img/remote/1460000022130272)
-- 浏览器和 Node.js 中的事件循环机制有什么区别？
+- **浏览器和 Node.js 中的事件循环机制有什么区别？**
+
+    - 浏览器事件循环机制：
+      
+        `事件循环机制指的是js运行期间对一些事件的处理规则和运行顺序、首先我们需要了解一些铺垫东西【主进程】【Macrotasks(宏任务)】【微任务(Microtasks)】【定时器模块】
+        下面我们介绍下那些是主进程的内容、那些是Macrotasks内容、那些是Microtasks、下面用图表示、我们先把浏览器的事件循环规则列出来更好理解些、浏览器进入script标签开始执行代码的时候、这时候会把所有的
+        代码丢到主进程运行计算、然后碰到Microtasks(微任务)会把微任务丢到微任务队列去（这个时候不会去执行、而是丢到专门存放微任务的队列去）、碰到Macrotasks(宏任务)也同样把任务丢到宏任务队列保存等待执行
+        这个时候主进程内容执行完后、他会【先】把Microtasks(微任务)队列的任务拿出来全部执行完（执行清空微任务队列）、然后【取一个】Macrotasks(宏任务)队列的任务执行、执行完在去看下Microtasks(微任务)是否有
+        需要执行的任务【有就执行并清空完】、然后在去【取一个】Macrotasks(宏任务)队列的任务、一直反复这个流程、【清空Microtasks(微任务)】 -> 【取一个Macrotasks(宏任务)】轮询、这个就是浏览器的事件循环规则
+        那定时器模块是干嘛的呢、定时器模块是专门处理setTimeout、和setInterval这钟、比如setTimeout( () =>{conso.log('五秒输出')), 5000 }、那这个代码会先进入定时器模块、等时间一到后把定时器方法内容push
+        到Macrotasks(宏任务)队列去！我们可以看下放代码`
+      
+        ```js
+        let a = 1;
+        let b = 2;
+        setTimeout(() =>{
+            console.log('setTimeout')
+        },2000)
+        let p = new Promise( (resolve) =>{
+            resolve(111)
+        })
+        p.then( res =>{
+            console.log(res)
+        })
+        console.log(a + b);
+        //答案 3 111 setTimeout
+        ```
+    
+    ![eventLoop.png](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4c32669536084ac08e634d037ad8c3e9~tplv-k3u1fbpfcp-watermark.image)
+    - 【总结浏览器eventLoop】：
+      
+        - 【Macrotasks(宏任务)】：Script、setTimeout、setInterval、UI rendering
+        - 【Microtasks(微任务)】：promises、Object.observe、MutationObserver
+        
+    - Node事件循环机制：
+        !!!!!!!!!!!!!!没写完
+        `Node的eventLoop和浏览器相识、但是微任务里面他区分了不同的Stack列表、比如process.nextTiclk和Promise都是属于微任务的、那他们谁先执行呢、`
+
+    【总结】：
+        浏览器和 Node 环境下，microtask（微任务） 任务队列的执行时机不同
+        Node 端，microtask（微任务） 在事件循环的各个阶段之间执行
+        浏览器端，microtask（微任务） 在事件循环的 macrotask(宏任务) 执行完之后执行
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 - ES6 Modules 相对于 CommonJS 的优势是什么？
 
 
 - 高级程序设计语言是如何编译成机器语言的？
-
+    
 
 - 编译器一般由哪几个阶段组成？数据类型检查一般在什么阶段进行？
-
+    
 
 - 编译过程中虚拟机的作用是什么？
-
+    
 
 - 什么是中间代码（IR），它的作用是什么？
-
+    
 
 - 什么是交叉编译？
 
